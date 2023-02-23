@@ -8,100 +8,318 @@
 <script src="javascript/jquery.min.js"></script>
 <script src="javascript/RGraph/RGraph.common.core.js"></script>
 <script src="javascript/RGraph/RGraph.gauge.js"></script>
-<script src="javascript/RGraph/RGraph.common.effects.js" ></script>
-<script src="javascript/RGraph/RGraph.line.js" ></script>
+<script src="javascript/RGraph/RGraph.common.effects.js"></script>
+<script src="javascript/RGraph/RGraph.line.js"></script>
+
+<!-- Add bootstrap and others -->
+<link href="style.css" rel="stylesheet" type="text/css" />
+<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<script src="bootstrap/js/bootstrap.min.js"></script>
+<script src="bootstrap/js/jquery-3.3.1.slim.min.js"></script>
+<script src="bootstrap/js/popper.min.js"></script>
+<script src='/socket.io/socket.io.js'></script>
+<form id="send-container">
+    <input type="text" id="message-input">
+    <button type="submit" id="send-button">Send</button>
+</form>
+<section>
+    <div id="first-section">
+        <div class="row" id="first-row">
+        </div>
+    </div>
+</section>
+<br />
+<section>
+    <div class="container-fuild">
+        <div class="row">
+            <div class="col-md-2" style="display: inline-block">
+                <div class="card">
+                    <center class="cartesianCenter">
+                        <span class="cartesian">X: <strong><span id="xText">0</span></strong></span><br>
+                        <span class="cartesian">Y: <strong><span id="yText">100</span></strong></span><br>
+                        <span class="cartesian">Z: <strong><span id="zText">50</span></strong></span><br>
+                        <span class="cartesian">Roll: <strong><span id="rollText">180</span></strong></span><br>
+                        <span class="cartesian">Pitch: <strong><span id="pitchText">0</span></strong></span><br>
+                        <span class="cartesian">Yaw: <strong><span id="yawText">163</span></strong></span><br>
+                    </center>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card">
+                    <center>
+                        <span class="joint">J1 <strong><span id="j1Text">0</span></strong></span><br>
+                        <span class="joint">J2: <strong><span id="j2Text">0</span></strong></span><br>
+                        <span class="joint">J3: <strong><span id="j3Text">50</span></strong></span><br>
+                        <span class="joint">J4: <strong><span id="j4Text">180</span></strong></span><br>
+                    </center>
+                </div>
+            </div>
+            <div class="col-md-3" style="border-style:solid">
+                <div class="card" style="border-style:none">
+                    <center>
+                        <div>
+                            <button class="button" onclick="btnSVON()">Servo ON</button><br>
+                            <button class="button" onclick="btnSVOFF()">Servo OFF</button>
+                        </div>
+                        <br />
+                        <div class="selectdiv">
+                            <label>
+                                <select class="select-content" style="width: 210px;" id="select_coordinate" onchange="select_coordinate()">
+                                    <option selected> Choose Coordinates </option>
+                                    <option>Joint Coordinates</option>
+                                    <option>Cartesian Coordinates</option>
+                                    <option>Tool Coordinates</option>
+                                    <option>User Coordinate</option>
+                                </select>
+                            </label>
+                        </div>
+                        <div class="selectdiv">
+                            <label>
+                                <select class="select-content" style="width: 210px;" id="select_tool" onchange="select_tool()">
+                                    <option selected> Choose Tool </option>
+                                    <option>Joint Coordinates</option>
+                                    <option>Cartesian Coordinates</option>
+                                    <option>Tool Coordinates</option>
+                                    <option>User Coordinates</option>
+                                </select>
+                            </label>
+                        </div>
+                        <div class="selectdiv">
+                            <label>
+                                <select class="select-content" style="min-width: 210px;" id="select_speed" onchange="select_speed()">
+                                    <option selected> Choose Speed </option>
+                                    <option>Low</option>
+                                    <option>Medium</option>
+                                    <option>High</option>
+                                    <option>Top</option>
+                                </select>
+                            </label>
+                        </div>
+                    </center>
+                </div>
+            </div>
+
+            <div class="col-md-5">
+                <div class="card" style="border-style: solid;">
+                    <label>Jog</label>
+                    <center class="jog">
+                        <div>
+                            <button class="button-jog" onmousedown="btnJ1_neg_pressed()" onmouseup="btnJ1_neg_released()">J1-</button>
+                            <button class="button-jog" onmousedown="btnJ1_pos_pressed()" onmouseup="btnJ1_pos_released()">J1+</button><br>
+                            <button class="button-jog" onmousedown="btnJ2_neg_pressed()" onmouseup="btnJ2_neg_released()">J2-</button>
+                            <button class="button-jog" onmousedown="btnJ2_pos_pressed()" onmouseup="btnJ2_pos_released()">J2+</button><br>
+                            <button class="button-jog" onmousedown="btnJ3_neg_pressed()" onmouseup="btnJ3_neg_released()">J3-</button>
+                            <button class="button-jog" onmousedown="btnJ3_pos_pressed()" onmouseup="btnJ3_pos_released()">J3+</button><br>
+                            <button class="button-jog" onmousedown="btnJ4_neg_pressed()" onmouseup="btnJ4_neg_released()">J4-</button>
+                            <button class="button-jog" onmousedown="btnJ4_pos_pressed()" onmouseup="btnJ4_pos_released()">J4+</button><br>
+                            <button class="button-jog" onmousedown="btnJ5_neg_pressed()" onmouseup="btnJ5_neg_released()">J5-</button>
+                            <button class="button-jog" onmousedown="btnJ5_pos_pressed()" onmouseup="btnJ5_pos_released()">J5+</button><br>
+                            <button class="button-jog" onmousedown="btnJ6_neg_pressed()" onmouseup="btnJ6_neg_released()">J6-</button>
+                            <button class="button-jog" onmousedown="btnJ6_pos_pressed()" onmouseup="btnJ6_pos_released()">J6+</button><br>
+
+                        </div>
+                    </center>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
 <script>
-    let gauge;
-    let canvas;
-    let obj = null;
-    let data      = [];
-    const numvalues = 1200;
-
-    window.onload = function () {
-
-        gauge = new RGraph.Gauge('cvs', 0, 100, 84)
-                .set('scale.decimals', 0)
-                .set('tickmarks.small', 50)
-                .set('tickmarks.big', 5)
-                .set('title.top', 'Temperature')
-                .set('title.top.size', 24)
-                .set('title.top.pos', 0.15)
-                .set('title.bottom', 'm³')
-                .set('title.bottom.color', '#aaa')
-                .set('border.outer', 'Gradient(white:white:white:white:white:white:white:white:white:white:#aaa)')
-                .draw();
-
-
-        canvas    = document.getElementById("cvs_graph");
-
-        function prepare_graph() {
-
-                obj = new RGraph.Line('cvs_graph', [])
-                    .set('title.vpos', 0.5)
-                    .set('title.yaxis.pos', 0.5)
-                    .set('colors', ['black'])
-                    .set('linewidth',0.75)
-                    .set('yaxispos', 'right')
-                    .set('ymax', 100)
-                    .set('xticks', 25)
-                    .set('numyticks', 0)
-                    .set('numxticks', 0)
-                    .set('background.grid', true)
-                    .set('tickmarks', true)
-                    .set('shadow', false)
-                    .set('gutter.top', 5)
-                    .set('gutter.bottom', 5);
-
-
-                // Pre-pad the arrays with null values
-                for (let i=0; i<numvalues; ++i) { data.push(null); }
-
-        }
-        prepare_graph();
-    }
-    function drawGraph (value,timestamp) {
-        if (!obj) return;
-        RGraph.Clear(canvas);
-
-        // Add some data to the data arrays
-        const len = data.length;
-        data.push(value);
-
-        if (data.length > numvalues) {
-            data = RGraph.array_shift(data);
-        }
-        obj.original_data[0] = data;
-        obj.Draw();
-    }
-
+    const statusBar = [
+        {
+            name: "Tool\n Number",
+            value: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+            img: "imgs/tool.png"
+        },
+        {
+            name: "Jogging Speed",
+            value: ["Low", "Medium", "High", "Top"],
+            img: "imgs/speed.png"
+        },
+        {
+            name: "Coordinate System",
+            value: ["Joint", "XYZ-World", "XYZ-Tool"],
+            img: "imgs/coordinate.png"
+        },
+        {
+            name: "Servo Status",
+            value: ["ON", "OFF"],
+            img: "imgs/servo_status.png"
+        },
+        {
+            name: "System Status",
+            value: ["OK", "Alarm", "Run", "Pause"],
+            img: "imgs/system_status.png"
+        },
+        {
+            name: "Lock/Unlock Controller",
+            value: ["Lock", "Unlock"],
+            img: "imgs/lock.png"
+        },
+        {
+            name: "Mode",
+            value: ["Teach", "Automatic"],
+            img: "imgs/teach.png"
+        },
+        {
+            name: "Security Level",
+            value: ["Operation", "Edit", "Management"],
+            img: "imgs/security.png"
+        },
+    ]
+    const main = document.getElementById("first-row");
+    statusBar.forEach(element => {
+        const div_card = document.createElement('div');
+        div_card.innerHTML = `
+                    <center>
+                        <div class="col">
+                            <center>
+                                <div class="card" style="width: 9rem; height: 9rem">
+                                        <center><img src=${element["img"]} class="thumbnail"/></center>
+                                        <center><p>${element["value"][0]}</p></center>
+                                        <h3 style="font-size: 16px">${element["name"]}</h3>
+                                </div>
+                            </center>
+                            </div>
+                    </center>
+        `
+        main.appendChild(div_card);
+    })
 </script>
-<canvas id="cvs" width="250" height="250">[No canvas support]</canvas>
-<canvas id="cvs_graph" width="650" height="250">[No canvas support]</canvas>
 
-<div id="field"></div>
-<div id="content"></div>
-<div id="info"></div>
-<script src='/socket.io/socket.io.js'></script>
 <script>
 
     const field = document.getElementById("field");
     const sendButton = document.getElementById("send");
     const content = document.getElementById("content");
     const info = document.getElementById("info");
-    
+
+    const messageForm = document.getElementById('send-container')
+    const messageInput = document.getElementById('message-input')
+
     const messages = [];
-    
+
     const socket = io.connect('http://localhost:3700');
 
-    socket.on('message', function (data) {
-        gauge.value = data.value;
-        gauge.draw();
-        gauge.set('title.top', data.browseName);
-        info.innerHTML = "nodeId= " + data.nodeId + " timestamp= "+ data.timestamp;
-        drawGraph(data.value);
+    socket.on('temp', function (data) {
+        //console.log("changed");
+        const x_text = document.getElementById("xText");
+        x_text.innerText = Math.round((data.value + Number.EPSILON) * 100) / 100;
     });
-
+    socket.on('pos', function (data) {
+        //console.log("changed");
+        const y_text = document.getElementById("yText");
+        y_text.innerText = Math.round((data.value + Number.EPSILON) * 100) / 100;
+    });
+    messageForm.addEventListener('submit', e => {
+        e.preventDefault()
+        const message = messageInput.value
+        socket.emit('send-chat-message', message)
+        messageInput.value = ''
+    })
+    socket.on('received-chat-message', message => {
+        console.log("Message is sent: " + message);
+    })
+    function btnSVON() {
+        socket.emit('SVON', 'clicked');
+    }
+    function btnSVOFF() {
+        socket.emit('SVOFF', 'clicked');
+    }
+    function select_coordinate() {
+        var d = document.getElementById("select_coordinate");
+        var displaytext = d.options[d.selectedIndex].text;
+        socket.emit('Sel_Cor', displaytext);
+    }
+    function select_tool() {
+        var d = document.getElementById("select_tool");
+        var displaytext = d.options[d.selectedIndex].text;
+        socket.emit('Sel_Too', displaytext);
+    }
+    function select_speed() {
+        var d = document.getElementById("select_speed");
+        var displaytext = d.options[d.selectedIndex].text;
+        socket.emit('Sel_Spe', displaytext);
+    }
+    function btnJ1_neg_pressed() {
+        console.log("J1_neg pressed");
+        //const x_text = document.getElementById("xText");
+        //x_text.innerText = " J1_neg pressed";
+        socket.emit('pressed', 'J1_neg');
+    }
+    function btnJ1_pos_pressed() {
+        socket.emit('pressed', 'J1_pos');
+    }
+    function btnJ2_neg_pressed() {
+        socket.emit('pressed', 'J2_neg');
+    }
+    function btnJ2_pos_pressed() {
+        socket.emit('pressed', 'J2_pos');
+    }
+    function btnJ3_neg_pressed() {
+        socket.emit('pressed', 'J3_neg');
+    }
+    function btnJ3_pos_pressed() {
+        socket.emit('pressed', 'J3_pos');
+    }
+    function btnJ4_neg_pressed() {
+        socket.emit('pressed', 'J4_neg');
+    }
+    function btnJ4_pos_pressed() {
+        socket.emit('pressed', 'J4_pos');
+    }
+    function btnJ5_neg_pressed() {
+        socket.emit('pressed', 'J5_neg');
+    }
+    function btnJ5_pos_pressed() {
+        socket.emit('pressed', 'J5_pos');
+    }
+    function btnJ6_neg_pressed() {
+        socket.emit('pressed', 'J6_neg');
+    }
+    function btnJ6_pos_pressed() {
+        socket.emit('pressed', 'J6_pos');
+    }
+    function btnJ1_neg_released() {
+        console.log("J1_neg released");
+        //const x_text = document.getElementById("xText");
+        //x_text.innerText = "J1_neg released";
+        socket.emit('released', 'J1_neg');
+    }
+    function btnJ1_pos_released() {
+        socket.emit('released', 'J1_pos');
+    }
+    function btnJ2_neg_released() {
+        socket.emit('released', 'J2_neg');
+    }
+    function btnJ2_pos_released() {
+        socket.emit('released', 'J2_pos');
+    }
+    function btnJ3_neg_released() {
+        socket.emit('released', 'J3_neg');
+    }
+    function btnJ3_pos_released() {
+        socket.emit('released', 'J3_pos');
+    }
+    function btnJ4_neg_released() {
+        socket.emit('released', 'J4_neg');
+    }
+    function btnJ4_pos_released() {
+        socket.emit('released', 'J4_pos');
+    }
+    function btnJ5_neg_released() {
+        socket.emit('released', 'J5_neg');
+    }
+    function btnJ5_pos_released() {
+        socket.emit('released', 'J5_pos');
+    }
+    function btnJ6_neg_released() {
+        socket.emit('released', 'J6_neg');
+    }
+    function btnJ6_pos_released() {
+        socket.emit('released', 'J6_pos');
+    }
 </script>
 
 
